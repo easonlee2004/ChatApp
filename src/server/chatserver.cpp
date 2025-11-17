@@ -2,7 +2,6 @@
 #include "json.hpp"
 #include "chatservice.hpp"
 #include <functional>
-#include <string>
 using namespace std;
 using namespace placeholders;
 using json = nlohmann::json;
@@ -39,8 +38,8 @@ void ChatServer::onConnection(const TcpConnectionPtr& conn)
 
 // 读写事件回调函数
 void ChatServer::onMessage(const TcpConnectionPtr& conn,
-                   Buffer* buffer,
-                   Timestamp time)
+                           Buffer* buffer,
+                           Timestamp time)
 {
     string buf = buffer->retrieveAllAsString();
     // 反序列化
