@@ -48,3 +48,6 @@
 
 # Test
 /test/
+
+# .vscode
+/.vscode/
