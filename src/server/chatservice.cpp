@@ -1,6 +1,7 @@
 #include "chatservice.hpp"
 #include "public.hpp"
 #include "muduo/base/Logging.h"
+#include "usermodel.hpp"
 #include <functional>
 using namespace muduo;
 using namespace muduo::net;
@@ -44,5 +45,30 @@ void ChatService::login(const TcpConnectionPtr &conn, json &js, Timestamp time)
 // 处理注册业务
 void ChatService::reg(const TcpConnectionPtr &conn, json &js, Timestamp time)
 {
-    LOG_INFO << "registering";
+    // 反序列化
+    string name = js["name"];
+    string pwd = js["password"];
+
+    User user;
+    user.setName(name);
+    user.setPwd(pwd);
+    
+    bool state = _userModel.insert(user);
+    if (state)
+    {
+        // 注册成功
+        json response;
+        response["msgid"] = REG_MSG_ACK;
+        response["id"] = user.getId();
+        response["errno"] = 0;
+        conn->send(response.dump());
+    }
+    else
+    {
+        // 注册失败
+        json response;
+        response["msgid"] = REG_MSG_ACK;
+        response["errno"] = 1;
+        conn->send(response.dump());
+    }
 }
