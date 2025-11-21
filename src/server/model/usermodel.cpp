@@ -54,3 +54,20 @@ User UserModel::query(int id)
 
     return User(); // 失败返回默认构造，id为-1
 }
+
+// 更新用户状态信息
+bool UserModel::updateState(User user)
+{
+    char sql[1024] = {0};
+    sprintf(sql, "update user set state = '%s' where id = %d", user.getState().c_str(), user.getId());
+
+    MySQL mysql;
+    if (mysql.connect())
+    {
+        if (mysql.update(sql))
+        {
+            return true;
+        }
+    }
+    return false;
+}

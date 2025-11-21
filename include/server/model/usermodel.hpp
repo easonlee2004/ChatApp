@@ -12,6 +12,9 @@ public:
 
     // 根据id查询用户
     User query(int id);
+
+    // 更新用户信息
+    bool updateState(User user);
 private:
 };
 

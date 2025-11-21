@@ -40,7 +40,7 @@ MsgHandler ChatService::getHandler(int msgid)
 // 处理登录业务 
 void ChatService::login(const TcpConnectionPtr &conn, json &js, Timestamp time)
 {
-    int id = js["id"];
+    int id = js["id"].get<int>();
     string pwd = js["password"];
     
     User user = _userModel.query(id);
@@ -58,6 +58,10 @@ void ChatService::login(const TcpConnectionPtr &conn, json &js, Timestamp time)
         else
         {
             // 登陆成功
+            // 修改state
+            user.setState("online");
+            _userModel.updateState(user);
+
             json response;
             response["msgid"] = LOGIN_MSG_ACK;
             response["errno"] = 0;
