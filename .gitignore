@@ -51,3 +51,6 @@
 
 # .vscode
 /.vscode/
+
+# 手写json测试
+test.txt
