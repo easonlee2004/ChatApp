@@ -4,6 +4,7 @@
 #include "muduo/net/TcpConnection.h"
 #include "json.hpp"
 #include "usermodel.hpp"
+#include "offlinemessagemodel.hpp"
 #include <unordered_map>
 #include <functional>
 #include <mutex>
@@ -52,6 +53,9 @@ private:
     
     // 数据操作类
     UserModel _userModel;
+
+    // 离线消息服务对象
+    OfflineMsgModel _offlineMsgModel;
 };
 
 

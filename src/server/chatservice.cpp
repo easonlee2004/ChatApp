@@ -4,6 +4,7 @@
 #include "usermodel.hpp"
 #include <functional>
 #include <mutex>
+#include <vector>
 using namespace muduo;
 using namespace muduo::net;
 
@@ -75,6 +76,16 @@ void ChatService::login(const TcpConnectionPtr &conn, json &js, Timestamp time)
             response["errno"] = 0;
             response["id"] = user.getId();
             response["name"] = user.getName();
+
+            // 检查是否有离线消息
+            vector<string> vec = _offlineMsgModel.query(user.getId());
+            if (!vec.empty())
+            {
+                response["offlinemsg"] = vec;
+                // 离线消息存入vector后应该将其删除
+                _offlineMsgModel.remove(id);
+            }
+
             conn->send(response.dump());
         }
     }
@@ -163,5 +174,5 @@ void ChatService::oneChat(const TcpConnectionPtr &conn, json &js, Timestamp time
     }
 
     // toid不在线，存储离线消息
-   
+    _offlineMsgModel.insert(toid, js.dump());
 }
