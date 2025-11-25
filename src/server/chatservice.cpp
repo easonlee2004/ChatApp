@@ -157,6 +157,13 @@ void ChatService::clientCloseException(const TcpConnectionPtr &conn)
     }
 }
 
+// 服务器异常退出重置方法
+void ChatService::reset()
+{
+    // 把online的用户设置为offline
+    _userModel.resetState();
+}
+
 // 一对一聊天业务
 void ChatService::oneChat(const TcpConnectionPtr &conn, json &js, Timestamp time)
 {

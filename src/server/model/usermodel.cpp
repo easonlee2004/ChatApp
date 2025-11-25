@@ -2,7 +2,7 @@
 #include <mysql/mysql.h>
 #include "db.h"
 
-// User表的增加方法
+// 将新用户插入user表
 bool UserModel::insert(User &user)
 {
     char sql[1024] = {0};
@@ -70,4 +70,16 @@ bool UserModel::updateState(User user)
         }
     }
     return false;
+}
+
+// 重置用户状态信息
+void UserModel::resetState()
+{
+    char sql[1024] = "update user set state = 'offline' where state = 'online'";
+
+    MySQL mysql;
+    if (mysql.connect())
+    {
+        mysql.update(sql);
+    }
 }
