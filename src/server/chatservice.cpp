@@ -19,10 +19,16 @@ ChatService* ChatService::instance()
 // 记录消息和对应回调操作
 ChatService::ChatService()
 {
+    // 用户业务回调
     _msgHandlerMap.insert({LOGIN_MSG, std::bind(&ChatService::login, this, _1, _2, _3)});
     _msgHandlerMap.insert({REG_MSG, std::bind(&ChatService::reg, this, _1, _2, _3)});
     _msgHandlerMap.insert({ONE_CHAT_MSG, std::bind(&ChatService::oneChat, this, _1, _2, _3)});
     _msgHandlerMap.insert({ADD_FRIEND_MSG, std::bind(&ChatService::addFriend, this, _1, _2, _3)});
+
+    // 群组业务回调
+    _msgHandlerMap.insert({CREATE_GROUP_MSG, std::bind(&ChatService::createGroup, this, _1, _2, _3)});
+    _msgHandlerMap.insert({ADD_GROUP_MSG, std::bind(&ChatService::addGroup, this, _1, _2, _3)});
+    _msgHandlerMap.insert({GROUP_CHAT_MSG, std::bind(&ChatService::groupChat, this, _1, _2, _3)});
 }
 
 // 获取消息对应的处理方法
@@ -205,10 +211,29 @@ void ChatService::oneChat(const TcpConnectionPtr &conn, json &js, Timestamp time
     _offlineMsgModel.insert(toid, js.dump());
 }
 
+// 添加好友业务
 void ChatService::addFriend(const TcpConnectionPtr &conn, json &js, Timestamp time)
 {
     int userid = js["id"].get<int>();
     int friendid = js["friendid"].get<int>();
 
     _friendModel.insert(userid, friendid);
+}
+
+// 创建群组业务
+void ChatService::createGroup(const TcpConnectionPtr &conn, json &js, Timestamp time)
+{
+    // TODO
+    // _groupModel.createGroup();
+}
+// 加入群组业务
+void ChatService::addGroup(const TcpConnectionPtr &conn, json &js, Timestamp time)
+{
+    // TODO
+    // _groupModel.addGroup();
+}
+// 群组聊天业务
+void ChatService::groupChat(const TcpConnectionPtr &conn, json &js, Timestamp time)
+{
+    // TODO
 }

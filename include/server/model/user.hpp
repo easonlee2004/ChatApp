@@ -24,7 +24,7 @@ public:
     string getName() { return _name; }
     string getPwd() { return _password; }
     string getState() { return _state; }
-private:
+protected: //用于groupuser继承
     int _id;
     string _name;
     string _password;

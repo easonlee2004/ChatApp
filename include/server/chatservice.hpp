@@ -1,11 +1,13 @@
 #ifndef __CHATSERVICE_HPP__
 #define __CHATSERVICE_HPP__
 
+#include "groupmodel.hpp"
 #include "muduo/net/TcpConnection.h"
 #include "json.hpp"
 #include "usermodel.hpp"
 #include "offlinemessagemodel.hpp"
 #include "friendmodel.hpp"
+#include "groupmodel.hpp"
 #include <unordered_map>
 #include <functional>
 #include <mutex>
@@ -37,6 +39,15 @@ public:
     // 添加好友业务
     void addFriend(const TcpConnectionPtr &conn, json &js, Timestamp time);
 
+    // 创建群组业务
+    void createGroup(const TcpConnectionPtr &conn, json &js, Timestamp time);
+
+    // 加入群组业务
+    void addGroup(const TcpConnectionPtr &conn, json &js, Timestamp time);
+    
+    // 群组聊天业务
+    void groupChat(const TcpConnectionPtr &conn, json &js, Timestamp time);
+
     // 处理客户端异常退出
     void clientCloseException(const TcpConnectionPtr &conn);
 
@@ -65,7 +76,8 @@ private:
     OfflineMsgModel _offlineMsgModel;
     // 好友关系
     FriendModel _friendModel;
+    // 群组管理
+    GroupModel _groupModel;
 };
-
 
 #endif
