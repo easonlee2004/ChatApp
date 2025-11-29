@@ -54,3 +54,6 @@
 
 # 手写json测试
 test.txt
+
+# Cache
+/.cache/
