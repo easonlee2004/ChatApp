@@ -1,4 +1,4 @@
-# SRC_LIST变量，包含所有源文件
+# 包含所有源文件
 aux_source_directory(. SRC_LIST)
 aux_source_directory(./db DB_LIST)
 aux_source_directory(./model MODEL_LIST)
