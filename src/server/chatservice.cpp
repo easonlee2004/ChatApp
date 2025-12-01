@@ -63,7 +63,7 @@ void ChatService::login(const TcpConnectionPtr &conn, json &js, Timestamp time)
             json response;
             response["msgid"] = LOGIN_MSG_ACK;
             response["errno"] = 2;
-            response["errmsg"] = "该账号已经登陆，请输入其他账号：";
+            response["errmsg"] = "This account is already logged in; please use a different account.";
             conn->send(response.dump());
         }
         else
@@ -113,6 +113,33 @@ void ChatService::login(const TcpConnectionPtr &conn, json &js, Timestamp time)
                 response["friends"] = vec2;
             }
 
+            // 查询用户的群组信息
+            vector<Group> groupVec = _groupModel.queryGroups(id);
+            if (!groupVec.empty())
+            {
+                vector<string> groupV; // groupVec存对象，groupV存json
+                for (Group &group : groupVec)
+                {
+                    json gjs;
+                    gjs["id"] = group.getId();
+                    gjs["groupname"] = group.getName();
+                    gjs["groupdesc"] = group.getDesc();
+                    
+                    vector<string> userV;
+                    for (GroupUser &user : group.getUsers())
+                    {
+                        json ujs;
+                        ujs["id"] = user.getId();
+                        ujs["name"] = user.getName();
+                        ujs["state"] = user.getState();
+                        ujs["role"] = user.getRole();
+                        userV.push_back(ujs.dump());
+                    }
+                    gjs["users"] = userV;
+                    groupV.push_back(gjs.dump());
+                }
+                response["groups"] = groupV;
+            }
             conn->send(response.dump());
         }
     }
@@ -122,7 +149,7 @@ void ChatService::login(const TcpConnectionPtr &conn, json &js, Timestamp time)
         json response;
         response["msgid"] = LOGIN_MSG_ACK;
         response["errno"] = 1;
-        response["errmsg"] = "用户名或密码错误";
+        response["errmsg"] = "Username or password is invalid.";
         conn->send(response.dump());
     }
 }

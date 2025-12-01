@@ -36,7 +36,7 @@ void GroupModel::addGroup(int userid, int groupid, string role)
 }
 
 // 查询给定用户所在的所有群
-vector<Group> GroupModel::queryGroup(int userid)
+vector<Group> GroupModel::queryGroups(int userid)
 {
     char sql[1024] = {0};
     sprintf(sql, "select a.id, a.groupname, a.groupdesc from allgroup a \
