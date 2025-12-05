@@ -21,6 +21,56 @@ using json = nlohmann::json;
 #include <semaphore.h>
 #include <atomic>
 
+// 记录当前用户信息
+User g_currentUser;
+
+// 当前用户好友列表
+vector<User> g_currentUserFriendList;
+
+// 当前好友所在群组
+vector<Group> g_currentUserGroupList;
+
+// 显示当前用户信息
+void showCurrentUserData();
+
+// 多线程接收函数句柄
+void readTaskHandler(int clientfd);
+
+// 主聊天页面
+void mainMenu();
+
+// 主页面command对应的函数句柄
+void help(int fd = 0, string str = "");
+void chat(int, string);
+void addfriend(int, string);
+void addgroup(int, string);
+void creategroup(int, string);
+void groupchat(int, string);
+void logout(int, string);
+
+// 支持的合法命令列表
+unordered_map<string, string> commandMap = {
+    {"help", "显示所有支持的命令，格式help"},
+    {"chat", "一对一聊天，格式chat:friendid:message"},
+    {"addfriend", "添加好友，格式addfriend:friendid"},
+    {"creategroup", "创建群组，格式creategroup:groupname:groupdesc"},
+    {"addgroup", "加入群组，格式addgroup:groupid"},
+    {"groupchat", "群聊，格式groupchat:groupid:message"},
+    {"logout", "注销，格式logout"}
+};
+
+// 
+unordered_map<string, function<void(int, string)>> commandHandlerMap = {
+    {"help", help},
+    {"chat", chat},
+    {"addfriend", addfriend},
+    {"creategroup", creategroup},
+    {"addgroup", addgroup},
+    {"groupchat", groupchat},
+    {"logout", logout}
+};
+
+
 int main(int argc, char **argv)
 {
     if (argc < 3)
@@ -38,7 +88,7 @@ int main(int argc, char **argv)
     int sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if (sockfd == -1)
     {
-        perror("Failed to create socket");
+        perror("Failed to create socket!");
         return -1;
     }
 
@@ -91,6 +141,12 @@ int main(int argc, char **argv)
                 {
                     cerr << "Send login message error: " << request << endl;
                 }
+
+                // 分离线程用于接收ack信息
+                thread readTask(readTaskHandler, sockfd);
+                readTask.detach();
+
+                mainMenu();
             }
             break;
             case 2: // 注册业务
@@ -129,4 +185,122 @@ int main(int argc, char **argv)
     }
 
     return 0;
+}
+
+// 显示当前用户信息
+void showCurrentUserData()
+{
+    cout << "==================== Current User ====================" << endl;
+    cout << "Current user ID: " << g_currentUser.getId() << ", name: " << g_currentUser.getName() << endl;
+    cout << "-------------------- Friend List --------------------" << endl;
+    if (!g_currentUserFriendList.empty())
+    {
+        for (User &user : g_currentUserFriendList)
+        {
+            cout << user.getId() << " " << user.getName() << " " << user.getState() << endl;
+        }
+    }
+    cout << "-------------------- Group List --------------------" << endl;
+    if (!g_currentUserGroupList.empty())
+    {
+        for (Group &group : g_currentUserGroupList)
+        {
+            cout << group.getId() << " " << group.getName() << " " << group.getDesc() << endl;
+            for (GroupUser &user : group.getUsers())
+            {
+                cout << "   " << user.getId() << " " << user.getName() << " " << user.getState() << " " << user.getRole() << endl;
+            }
+        }
+    }
+    cout << "======================================================" << endl;
+}
+
+
+// 多线程接收函数句柄
+void readTaskHandler(int clientfd)
+{
+    while (1)
+    {
+        char buffer[1024] = {0};
+        int len = recv(clientfd, buffer, 1024, 0);
+        if (len == 0 || len == -1)
+        {
+            close(clientfd);
+            exit(1);
+        }
+
+        json js = json::parse(buffer);
+
+        if (js["msgid"] == ONE_CHAT_MSG)
+        {
+
+        }
+
+        if (js["msgid"] == GROUP_CHAT_MSG)
+        {
+
+        }
+
+        if (js["msgid"] == LOGIN_MSG_ACK)
+        {
+            if (js["errno"].get<int>() != 0)
+            {
+                cerr << js["errmsg"] << endl;
+
+            }
+            else
+            {
+                g_currentUser.setId(js["id"].get<int>());
+                g_currentUser.setName(js["name"]);
+            }
+
+        }
+
+        if (js["msgid"] == REG_MSG_ACK)
+        {
+
+        }
+    }
+
+}
+
+// 主聊天页面
+void mainMenu()
+{
+    
+}
+
+void help(int, string)
+{
+
+}
+
+void chat(int fd, string str)
+{
+
+}
+
+void addfriend(int fd, string str)
+{
+
+}
+
+void addgroup(int fd, string str)
+{
+
+}
+
+void creategroup(int fd, string str)
+{
+
+}
+
+void groupchat(int fd, string str)
+{
+
+}
+
+void logout(int fd, string str)
+{
+
 }
